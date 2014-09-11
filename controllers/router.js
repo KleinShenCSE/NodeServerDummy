@@ -10,7 +10,7 @@ function route(request, response) {
       if (request.method === 'GET') {
         displayIndexPage(request, response);
       } else if (request.method === 'POST') {
-
+        displayInput(request, response);
       }
       break;
     case (/\/set-cookie/.test(pathname)): 
@@ -34,5 +34,13 @@ function displayIndexPage(req, res) {
 }
 
 
+function displayInput(req, res) {
+  req.on('data', function(chunk) {
+    var content = chunk.toString().split("&").join(" ");
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.write(content);
+    res.end();
+  });
+}
 exports.route = route;
 
