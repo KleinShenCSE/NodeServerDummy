@@ -1,26 +1,36 @@
+"use strict"
+
 var url = require("url");
 var fs = require('fs');
 var indexPagePath = '../views/index.html';
 
-function route(request, response) {
+var __ = function () {
+};
+
+__.create = function create() {
+    var instance = new __();
+    return instance;
+};
+
+__.prototype.route = function(request, response) {
   // get path to the request handler accodringly
   var pathname = url.parse(request.url, true).pathname;
 
   switch (true) {
     case (/\/set-cookie/.test(pathname) && request.method === 'GET'):
-      setCookie(request, response);
+      this.setCookie(request, response);
       break;
 
     case (/\/read-cookie/.test(pathname) && request.method === 'GET'):
-      viewCookie(request, response);
+      this.viewCookie(request, response);
       break;
 
     case (/\//.test(pathname) && request.method === 'GET'):
-      displayIndexPage(request, response);
+      this.displayIndexPage(request, response);
       break;
 
     case (/\//.test(pathname) && request.method === 'POST'):
-      displayInput(request, response);
+      this.displayInput(request, response);
       break;
 
     default:
@@ -32,7 +42,7 @@ function route(request, response) {
 }
 
 // read index.html from server fs
-function displayIndexPage(req, res) {
+__.prototype.displayIndexPage = function(req, res) {
   fs.readFile(indexPagePath, function (err, data) {
     res.writeHead(200, {'Content-Type': 'text/html','Content-Length':data.length});
     res.write(data);
@@ -41,7 +51,7 @@ function displayIndexPage(req, res) {
 }
 
 
-function displayInput(req, res) {
+__.prototype.displayInput = function(req, res) {
   req.on('data', function(chunk) {
     var content = chunk.toString().split("&").join(" ");
     res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -51,7 +61,7 @@ function displayInput(req, res) {
 }
 
 
-function setCookie(req, res) {
+__.prototype.setCookie = function(req, res) {
   var d = new Date();
   d.setMinutes(d.getMinutes() + 1);
   res.writeHead(200, {
@@ -60,11 +70,11 @@ function setCookie(req, res) {
   res.end();
 }
 
-function viewCookie(req, res) {
+__.prototype.viewCookie = function(req, res) {
   var cookies = req.headers.cookie;
   res.writeHead(200, {'Content-Type': 'text/html','Content-Length':cookies.length});
   res.write(cookies);
   res.end();
 }
-exports.route = route;
 
+module.exports = __;
