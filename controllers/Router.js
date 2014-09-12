@@ -15,7 +15,7 @@ __.create = function create() {
 __.prototype.route = function(request, response) {
   // get path to the request handler accodringly
   var pathname = url.parse(request.url, true).pathname;
-
+  
   switch (true) {
     case (/\/set-cookie/.test(pathname) && request.method === 'GET'):
       this.setCookie(request, response);
