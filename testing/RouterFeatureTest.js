@@ -3,48 +3,38 @@ process.env.NODE_ENV = 'test';
 
 var Browser = require("zombie");
 var assert = require("assert");
+var http = require('http');
 
-var server = require('../controllers/Server').create();
+var Server = require('../controllers/Server');
+var router = require('../controllers/Router').create();
 
-var testPort = 5000;
-var testServer = 'http://localhost:' + testPort;
+var testPort = 5050;
+var testServer = 'http://localhost:5050/';
 
 process.on('uncaughtException', function (err) {
   console.log(err);
 });
 
 exports['server and router tests'] = {
-	// setUp: function() {
- //       // this.server = Server.create();
- //       // this.server.start(testPort);
- //       // server.start(testPort);
- //    },
-
- //    tearDown: function() {
- //    	// this.server.close();
- //    },
-
 	'should fill out the form on the index page and route to display': function(test) {
-		server.start(3000);
+		var server = Server.create();
+		server.start(testPort, router);
 		var browser = new Browser();
-		test.expect(1);
-		
-		browser.visit("http://localhost:3000/").then(function() {
-			test.ok(true);
-		// 	test.done();
-		// // 	// test.equal(browser.location.href, testServer +'/');
 
-		// // 	test.done();
-		// // }, function() {
-		// // 	test.done();
+		test.expect(2);
+
+		browser.visit(testServer).then(function() {
 			
-		});
-		// test.done();
-		test.done();
-		server.close();
-	}
-	// ,
-	// 'should manually set the cookie and display when route to /read-cookie within one min': function(test) {
+			test.equal(browser.html('span'),'<span>input personal information</span>');
+			
+			browser.fill("#name",'dummyName')
+			.pressButton("#submit", function() {
+     			var browserHtml = browser.html('*');
+     			test.equal(browserHtml, '<html><head></head><body>name=dummyName year=Freshman gender=male</body></html><head></head><body>name=dummyName year=Freshman gender=male</body>');
+   				server.close();
+				test.done();
+   			});
 
-	// }
+		});
+	}
 }

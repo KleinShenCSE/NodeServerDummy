@@ -1,7 +1,6 @@
 "use strict"
 
 var http = require('http');
-var router = require("./Router").create();
 var fs = require('fs');
 
 
@@ -15,16 +14,17 @@ __.create = function create() {
 };
 
 
-
-__.prototype.start = function(hostport) {
-	console.log('creating a server on ' + hostport);
+__.prototype.start = function(hostport, router) {
+	console.log('server listening on on ' + hostport);
 	this.server = http.createServer(function (req, res) {
+		console.log('one request');
 		router.route(req, res);
 	}).listen(hostport);
 }
 
-__.prototype.close = function() {
+__.prototype.close = function() {	
 	this.server.close();
+	console.log('server shut down');
 }
 
 module.exports = __;
